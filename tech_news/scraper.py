@@ -42,7 +42,34 @@ def scrape_next_page_link(html_content):
 
 # Requisito 4
 def scrape_noticia(html_content):
-    """Seu código deve vir aqui"""
+    selector = Selector(text=html_content)
+    tags = []
+    news_url = ""
+    first_paragraph = selector.css('.entry-content p')[0]
+
+    # get text attributes from all nodes
+    # https://stackoverflow.com/questions/33088402/extracting-text-within-em-tag-in-scrapy
+    news_summary = "".join(first_paragraph.xpath(".//text()").extract())
+
+    for link in selector.css('link'):
+        if link.css('::attr(rel)').get() == 'canonical':
+            news_url = link.css('::attr(href)').get()
+
+    for tag in selector.css('.post-tags a::text').getall():
+        tags.append(tag)
+
+    news_data = {
+        'url': news_url,
+        'title': selector.css('.entry-title::text').get(),
+        'timestamp': selector.css('.meta-date::text').get(),
+        'writer': selector.css('.author a::text').get(),
+        'comments_count': 0,
+        'summary': news_summary,
+        'tags': tags,
+        'category': selector.css('.category-style .label::text').get()
+    }
+
+    return news_data
 
 
 # Requisito 5
