@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from tech_news.database import search_news
 
 
@@ -16,7 +17,38 @@ def search_by_title(title):
 
 # Requisito 7
 def search_by_date(date):
-    """Seu código deve vir aqui"""
+    try:
+        datetime.strptime(date, "%Y-%m-%d").date()
+    except ValueError:
+        raise ValueError("Data inválida")
+
+    months = {
+        "01": "janeiro",
+        "02": "fevereiro",
+        "03": "março",
+        "04": "abril",
+        "05": "maio",
+        "06": "junho",
+        "07": "julho",
+        "08": "agosto",
+        "09": "setembro",
+        "10": "outubro",
+        "11": "novembro",
+        "12": "dezembro",
+    }
+
+    splitted = date.split("-")
+
+    formatted = f"{int(splitted[2])} de {months[splitted[1]]} de {splitted[0]}"
+
+    news = search_news({"timestamp": formatted})
+    formatted_news = []
+
+    for item in news:
+        tuple_news = (item["title"], item["url"])
+        formatted_news.append(tuple_news)
+
+    return formatted_news
 
 
 # Requisito 8
