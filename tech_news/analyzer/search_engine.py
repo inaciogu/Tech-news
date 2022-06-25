@@ -53,7 +53,14 @@ def search_by_date(date):
 
 # Requisito 8
 def search_by_tag(tag):
-    """Seu código deve vir aqui"""
+    news = search_news({'tags': {"$in": [re.compile(tag, re.IGNORECASE)]}})
+    formatted_news = []
+
+    for item in news:
+        tuple_news = (item["title"], item["url"])
+        formatted_news.append(tuple_news)
+
+    return formatted_news
 
 
 # Requisito 9
